@@ -5,7 +5,7 @@ reverse shell, but it also provides some powerful functions which are similar to
 Like **File Download/Upload**, **Webcam snapshot**, I will continue to add more function
  later.
  
-##Setup
+## Setup
 ````
 git clone https://github.com/HalukShan/HitD.git
 ````
@@ -43,7 +43,7 @@ cd HitDA; git clone https://github.com/cdrx/docker-pyinstaller.git
 ```
 Now you've done all the steps
 
-##Usage
+## Usage
 ```
 cd HitDA
 ```
@@ -87,7 +87,30 @@ svchost.exe
 ````
 Save as .bat file, and use battoexe to generate a small exe file.
 
-###Listening
-Choose option 1 to start the listening mode
+### Listening
+Choose option 1 to start the listening mode, enter your listening host
+and port, then wait the connection. When successfully connect to the cmd shell, you can use some command like
+
+Download the specified remote file and save as local filename 
+```
+download remote_filename local_filename
+```
+
+Webcam snapshot and save as filename
+```
+webcam_snap filename
+```
+
+There are some common usages of cmdshell
+```
+cd path
+mkdir dirname
+echo "content" >> filename
+del filename
+tasklist
+taskkill /PID pid /F
+netstat
+```
+You can also use the powershell for more powerful command
 
 
