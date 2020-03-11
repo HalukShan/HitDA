@@ -1,7 +1,7 @@
 # HitDA
-HitDA is a Multi-Function utilization script based on Reverse Shell write in Python3 for Kali Linux.
-It's not a meterpreter, so it is easy to bypass the **AV-Software**.You can use it like a 
-reverse shell, but it also provides some powerful functions which are similar to Meterpreter.
+HitDA is a Multi-Function backdoor based on TCP Reverse Shell write in Python3 for Kali Linux.
+It is easy to bypass the **AV-Software**.In addition to the basic reverse shell function
+, you can also use some powerful functions which are similar to Meterpreter.
 Like **File Download/Upload**, **Webcam snapshot**, I will continue to add more function
  later.
  
@@ -74,9 +74,11 @@ author: HalukShan
 || [9] Exit                                              ||
  =========================================================
 ```
-When you choose 0, you can choose the script with webcam snap function
-or not, the webcam function will increase the file size to about
-**50MB**, otherwise, it's about **5MB**. You can also use the **powershell** 
+When you choose 0, you can choose the platform you want, and choose the script with webcam snap function
+or not, the webcam function will increase the script size to about
+**50MB**, otherwise, it's about **5MB**. 
+
+You can also use the **powershell** 
 script to automate download the script and execute, it will be more
 anonymous and customizable. Like:
 ````

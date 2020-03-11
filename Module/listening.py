@@ -57,7 +57,7 @@ class Listening:
                 try:
                     filename, localpath = command[9:].split(" ")
                 except:
-                    print("Wrong syntax!")
+                    print("Invalid syntax!")
                     continue
                 self.client_socket.send("download ".encode() + filename.encode())
                 status = self.download(localpath)
@@ -81,6 +81,7 @@ class Listening:
         self.client_socket.close()
         # close server connection
         self.s.close()
+
 
 if __name__ == '__main__':
     l = Listening("0.0.0.0", 4444)
