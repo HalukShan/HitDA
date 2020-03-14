@@ -75,17 +75,17 @@ def tmp_generate(filename, host, port):
 
 def payload_generate():
     try:
-        s = subprocess.run("pyinstaller -F tmp.py --noconsole", shell=True, stdout=subprocess.PIPE)
+        s = subprocess.Popen("pyinstaller -F tmp.py --noconsole", shell=True, stdout=subprocess.PIPE).wait()
         # Check the src directory
         if not os.path.exists("docker-pyinstaller/src"):
             os.mkdir("./docker-pyinstaller/src/")
         # Move the generate tmp file to the docker environment
-        subprocess.run("mv tmp.spec ./docker-pyinstaller/src", shell=True, stdout=subprocess.PIPE)
-        subprocess.run("mv tmp.py ./docker-pyinstaller/src", shell=True, stdout=subprocess.PIPE)
+        subprocess.Popen("mv tmp.spec ./docker-pyinstaller/src", shell=True, stdout=subprocess.PIPE).wait()
+        subprocess.Popen("mv tmp.py ./docker-pyinstaller/src", shell=True, stdout=subprocess.PIPE).wait()
         os.chdir("docker-pyinstaller/src")
         # Generate the requirements file
-        subprocess.run("pipreqs ./ --force", shell=True, stdout=subprocess.PIPE)
-        subprocess.run("docker run -v \"$(pwd):/src/\" cdrx/pyinstaller-windows", shell=True, stdout=subprocess.PIPE)
+        subprocess.Popen("pipreqs ./ --force", shell=True, stdout=subprocess.PIPE).wait()
+        subprocess.Popen("docker run -v \"$(pwd):/src/\" cdrx/pyinstaller-windows", shell=True, stdout=subprocess.PIPE).wait()
         print(bcolors.GREEN + "Sucess generate! The exe file path is ./docker-pyinstaller/src/dist/windows. "
               "You can change file name by yourself." + bcolors.ENDC)
     except:
