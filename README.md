@@ -114,7 +114,7 @@ taskkill /PID pid /F
 netstat
 ```
 
-##TroubleShoot
+## TroubleShoot
 If you got the below error message when generating
 ```
 Failed to establish a new connection: [Errno 11002] getaddrinfo failed')': /simple/opencv-python/
