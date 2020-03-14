@@ -113,6 +113,19 @@ tasklist
 taskkill /PID pid /F
 netstat
 ```
-You can also use the powershell for more powerful command
 
-
+##TroubleShoot
+If you got the below error message when generating
+```
+Failed to establish a new connection: [Errno 11002] getaddrinfo failed')': /simple/opencv-python/
+```
+Adding Google DNS to your local config
+```
+vim /etc/resolv.conf
+```
+Add
+```
+# Google IPv4 nameservers
+nameserver 8.8.8.8
+nameserver 8.8.4.4
+```
