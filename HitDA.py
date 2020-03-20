@@ -202,7 +202,8 @@ def start_listening():
             print("Usage: sessions : check available sessions\n" +
                   "       session num : open a alive session\n" +
                   "       session [-d] num : delete a session\n" +
-                  "       session -t : terminate all sessions\n"
+                  "       session -t : terminate all sessions\n" +
+                  "       exit (in session) : backgroud session\n"
             )
 
 

@@ -85,10 +85,8 @@ def run():
 
 
 if __name__ == '__main__':
-    # SERVER_HOST = "$HOST$"
-    # SERVER_PORT = "$PORT$"
-    SERVER_HOST = "192.168.1.101"
-    SERVER_PORT = 4445
+    SERVER_HOST = "$HOST$"
+    SERVER_PORT = "$PORT$"
     BUFFER_SIZE = 10240
     s = socket.socket()
     s.connect((SERVER_HOST, SERVER_PORT))
