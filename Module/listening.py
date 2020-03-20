@@ -24,7 +24,7 @@ class Listening:
         i = 0
         while 1:
             client_socket, client_address = self.s.accept()
-            parent_conn, child_conn = Pipe()
+            parent_conn, child_conn = Pipe()  # using different pipe to avoid corruption from process reading
             print(f"[+] connect from {client_address[0]}: {client_address[1]} in session: {i}")
             spath = client_socket.recv(self.BUFFER_SIZE).decode()
             p = Process(target=self.run, args=(child_conn, client_socket))
