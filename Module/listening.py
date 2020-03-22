@@ -119,8 +119,3 @@ class Listening:
         results = client_socket.recv(self.BUFFER_SIZE).decode("utf-8", "ignore")
         # print them
         print(results, end='> ')
-
-
-if __name__ == '__main__':
-    l = Listening("0.0.0.0", 4444)
-    l.run()
