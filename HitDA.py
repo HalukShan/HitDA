@@ -193,9 +193,9 @@ def start_listening():
                     num = se[8:]
                     ses = l.sessions.get(int(num))
                     print(f"select session {num}")
+                    print(ses[2])
                     parent_conn = ses[0]
                     while l.sessions.get(int(num)):
-                        print(l.sessions.get(int(num)))
                         cmd = input()
                         if cmd == "background":
                             print(bcolors.OCRA + f"session {num} background.." + bcolors.ENDC)
