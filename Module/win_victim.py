@@ -3,7 +3,6 @@ import subprocess
 import os
 import platform
 import sys
-import winreg
 
 
 def send_file(filename):

