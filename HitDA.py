@@ -107,7 +107,7 @@ def generate_script():
     while True:
         host = input("Please input your listening host: ")
         port = input("Please input your listening port: ")
-        confirm = input(f"Your listening host: " + host + ", port: " + port + ", (y/n)")
+        confirm = input("Your listening host: " + host + ", port: " + port + ", (y/n)")
         if confirm.lower() == "n":
             continue
         else:

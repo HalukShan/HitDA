@@ -17,7 +17,7 @@ class Listening:
         self.s = socket.socket()
         self.s.bind((self.SERVER_HOST, self.SERVER_PORT))
         self.s.listen(5)
-        print(f"[*] Listening as " + self.SERVER_HOST + ":" + self.SERVER_PORT)
+        print("[*] Listening as " + self.SERVER_HOST + ":" + self.SERVER_PORT)
         Process(target=self.accept).start()
 
     def accept(self):
@@ -25,7 +25,7 @@ class Listening:
         while 1:
             client_socket, client_address = self.s.accept()
             parent_conn, child_conn = Pipe()  # using different pipe to avoid corruption from process reading
-            print(f"[+] connect from " + client_address[0] + ": " + client_address[1] + " in session: " + i)
+            print("[+] connect from " + client_address[0] + ": " + client_address[1] + " in session: " + i)
             spath = client_socket.recv(self.BUFFER_SIZE).decode()
             status = True
             p = Process(target=self.run, args=(child_conn, client_socket, i))
@@ -40,7 +40,7 @@ class Listening:
             try:
                 self.send_cmd(cmd, client_socket)
             except BrokenPipeError or ConnectionRefusedError:
-                print(f"Session " + i + " has been closed...")
+                print("Session " + i + " has been closed...")
                 self.sessions.pop(i)
                 break
 
@@ -64,7 +64,7 @@ class Listening:
         else:
             file_size = int(rev)
         client_socket.send("ok".encode())
-        progress = tqdm.tqdm(range(file_size), f"Receiving " + localpath, unit="B", unit_scale=True, unit_divisor=1024)
+        progress = tqdm.tqdm(range(file_size), "Receiving " + localpath, unit="B", unit_scale=True, unit_divisor=1024)
         left = file_size
         with open(localpath, "wb") as f:
             while True:
