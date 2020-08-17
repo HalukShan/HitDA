@@ -145,7 +145,7 @@ def start_listening():
     while True:
         host = input("Please input listening host: ")
         port = input("Please input listening port: ")
-        confirm = input(f"Your listening host: " + host + ", port: " + port + ", (Y/N)")
+        confirm = input("Your listening host: " + host + ", port: " + port + ", (Y/N)")
         if confirm.lower() == "n":
             continue
         else:
